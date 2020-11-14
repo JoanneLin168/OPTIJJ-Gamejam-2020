@@ -5,6 +5,10 @@ import Classes
 import Sprite
 from pygame import mixer
 
+global levelList
+levelList = ["Assets/Tutorial.txt","Assets/Level01.txt","Assets/Level02.txt"]
+global levelID
+levelID = 0
 
 class Direction():
     UP = 0
@@ -18,12 +22,12 @@ class EntityType():
 
 enemies = []
 player = Classes.Player(EntityType.PLAYER,64,64,10,19,100,5,Direction.DOWN)
-enemy1 = Classes.Enemy(EntityType.ENEMY,64,64,10,10,100,5,Direction.DOWN)
+#enemy1 = Classes.Enemy(EntityType.ENEMY,64,64,10,10,100,5,Direction.DOWN)
 enemies.append(player)
-enemies.append(enemy1)
+#enemies.append(enemy1)
 
-enemy2 = Classes.Enemy(EntityType.ENEMY,64,64,10,0,100,5,Direction.DOWN)
-enemies.append(enemy2)
+#enemy2 = Classes.Enemy(EntityType.ENEMY,64,64,10,0,100,5,Direction.DOWN)
+#enemies.append(enemy2)
 
 Sprite.initAnim(enemies)
 Sprite.initAnim([player])
@@ -39,15 +43,30 @@ def loadLevel(filename):
                 value = int(i)
                 arrayLine.append(value)
         array.append(arrayLine)
+    file.close()
     return array
 
+def wipeEnemy(): #DUMMY FUNCTION TO REMOVE ENEMIES FROM A LEVEL FOR NOW
+    toDelete = []
+    for i in enemies:
+        if i.type == 1:
+            toDelete.append(enemies.index(i))
+    modifier = 0
+    for i in toDelete:
+        enemies.pop((i-modifier))
+        modifier += 1
+
+
 def nextLevel(doorOpen,player):
+    global levelID
+
     doorOpen = False
 
-    #wipeEnemy(gg)
+    wipeEnemy()
 
     print("Next Level")
-    arrayMap = loadLevel("Assets/Tutorial.txt")
+    arrayMap = loadLevel(levelList[levelID])
+    levelID += 1
     for x in range(0,20):
         for y in range(0,20):
             value = arrayMap[x][y]
@@ -74,6 +93,22 @@ def gridDisplay(displayWindow):
         for y in range(0,20):
             pygame.draw.rect(displayWindow,white,(((x*40) + 40),((y*40) + 40),40,40)) #Black Border
             pygame.draw.rect(displayWindow,black,(((x*40) + 35),((y*40) + 35),35,35))
+
+def floorDisplay(displayWindow):
+    floorImage = pygame.image.load('assets/tile.png')
+    doorImage = pygame.image.load('assets/door.png')
+    openDoor = pygame.image.load('assets/dooro.png')
+    black = (0,0,0)
+    white = (255,255,255)
+    for x in range(0,20):
+        for y in range(0,20):
+            if y == 0 and x == 10:
+                if doorOpen:
+                    displayWindow.blit(openDoor,(((x*40)+30),((y*40) + 35)))
+                else:
+                    displayWindow.blit(doorImage,(((x*40)+30),((y*40) + 35)))
+            else:
+                displayWindow.blit(floorImage,(((x*40)+30),((y*40) + 35)))
     """
     (0,0)------------ (19,0)
         |            |
@@ -117,13 +152,18 @@ inputLag = 7 #game can't accept input for 10 frames
 #puzzles?
 #Combat
 #weapons
-
+bg = pygame.image.load('assets/red.png')
 while True: #When program runs
     displayWindow.fill((255,255,255)) #background is white
+    displayWindow.blit(bg,(0,0))
 
     #put main display components
     showFps(displayWindow, clock)
-    gridDisplay(displayWindow)
+
+
+    #gridDisplay(displayWindow)
+    floorDisplay(displayWindow)
+
     for enemy in enemies:
         Sprite.playAnim(displayWindow,enemy)
     Sprite.playAnim(displayWindow,player)
@@ -136,45 +176,26 @@ while True: #When program runs
     keys = pygame.key.get_pressed()
 
     if inputBuffer == 0:
-
         if keys[pygame.K_LEFT] and player.x > 0:
-            #check if UP and DOWN is being pressed as well
-            """if keys[pygame.K_UP] and player.y >= 0:
-                player.y -= player.vel
-                player.direction = Direction.UP
-            elif keys[pygame.K_DOWN] and player.y <= screenHeight:
-                player.y += player.vel
-                player.direction = Direction.DOWN"""
-
-            #player.x -= player.vel
             player.x -= 1
             player.direction = Direction.LEFT
             player.isWalking = True
             inputBuffer = inputLag
 
         elif keys[pygame.K_RIGHT] and player.x < 19:
-            #check if UP and DOWN is being pressed as well
-            """if keys[pygame.K_UP] and player.y >= 0:
-                player.y -= player.vel
-                player.direction = Direction.UP
-            elif keys[pygame.K_DOWN] and player.y <= screenHeight:
-                player.y += player.vel
-                player.direction = Direction.DOWN"""
-
-            #player.x += player.vel
             player.x += 1
             player.direction = Direction.RIGHT
             player.isWalking = True
             inputBuffer = inputLag
 
         elif keys[pygame.K_UP] and player.y > 0:
-            #player.y -= player.vel
             player.y -= 1
             player.direction = Direction.UP
             player.isWalking = True
             inputBuffer = inputLag
 
         elif keys[pygame.K_UP] and player.y == 0 and player.x == 10 and doorOpen:
+
             doorOpen = nextLevel(doorOpen,player)
         #comment out if no moving back
         elif keys[pygame.K_DOWN] and player.y < 19:
@@ -186,8 +207,19 @@ while True: #When program runs
             doorOpen = True
             inputBuffer = inputLag
 
+        elif keys[pygame.K_z]:
+            player.isWalking = False
+            player.isAttacking = True
+
+        elif keys[pygame.K_x]:
+            player.isWalking = False
+            player.isAttacking = False
+            player.isDead = True #game should end
+
         else:
             player.isWalking = False
+            player.isAttacking = False
+            player.isDead = False
 
     else:
         inputBuffer -= 1

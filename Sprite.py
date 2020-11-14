@@ -5,51 +5,79 @@ class EntityType():
     PLAYER = 0
     ENEMY = 1
 
-moveSprites = [[(0, 64*8, 64, 64), (64*1, 64*8, 64, 64), (64*2, 64*8, 64, 64), (64*3, 64*8, 64, 64), (64*4, 64*8, 64, 64), (64*5, 64*8, 64, 64), (64*6, 64*8, 64, 64)],
-         [(0, 64*9, 64, 64), (64*1, 64*9, 64, 64), (64*2, 64*9, 64, 64), (64*3, 64*9, 64, 64), (64*4, 64*9, 64, 64), (64*5, 64*9, 64, 64), (64*6, 64*9, 64, 64)],
-         [(0, 64*10, 64, 64), (64*1, 64*10, 64, 64), (64*2, 64*10, 64, 64), (64*3, 64*10, 64, 64), (64*4, 64*10, 64, 64), (64*5, 64*10, 64, 64), (64*6, 64*10, 64, 64)],
-         [(0, 64*11, 64, 64), (64*1, 64*11, 64, 64), (64*2, 64*11, 64, 64), (64*3, 64*11, 64, 64), (64*4, 64*11, 64, 64), (64*5, 64*11, 64, 64), (64*6, 64*11, 64, 64)]]
+moveSprites = [
+[(0, 64*8, 64, 64), (64*1, 64*8, 64, 64), (64*2, 64*8, 64, 64), (64*3, 64*8, 64, 64), (64*4, 64*8, 64, 64), (64*5, 64*8, 64, 64), (64*6, 64*8, 64, 64)],
+[(0, 64*9, 64, 64), (64*1, 64*9, 64, 64), (64*2, 64*9, 64, 64), (64*3, 64*9, 64, 64), (64*4, 64*9, 64, 64), (64*5, 64*9, 64, 64), (64*6, 64*9, 64, 64)],
+[(0, 64*10, 64, 64), (64*1, 64*10, 64, 64), (64*2, 64*10, 64, 64), (64*3, 64*10, 64, 64), (64*4, 64*10, 64, 64), (64*5, 64*10, 64, 64), (64*6, 64*10, 64, 64)],
+[(0, 64*11, 64, 64), (64*1, 64*11, 64, 64), (64*2, 64*11, 64, 64), (64*3, 64*11, 64, 64), (64*4, 64*11, 64, 64), (64*5, 64*11, 64, 64), (64*6, 64*11, 64, 64)]]
 
 standSprites = [[(0, 64*8, 64, 64)], [(0, 64*9, 64, 64)], [(0, 64*10, 64, 64)], [(0, 64*11, 64, 64)]]
 
-numOfEntities = 2
+playerAttackSprites = [
+[(0, 64*4, 64, 64), (64*1, 64*4, 64, 64), (64*2, 64*4, 64, 64), (64*3, 64*4, 64, 64), (64*4, 64*4, 64, 64), (64*5, 64*4, 64, 64), (64*6, 64*4, 64, 64), (64*7, 64*4, 64, 64)],
+[(0, 64*5, 64, 64), (64*1, 64*5, 64, 64), (64*2, 64*5, 64, 64), (64*3, 64*5, 64, 64), (64*4, 64*5, 64, 64), (64*5, 64*5, 64, 64), (64*6, 64*5, 64, 64), (64*7, 64*5, 64, 64)],
+[(0, 64*6, 64, 64), (64*1, 64*6, 64, 64), (64*2, 64*6, 64, 64), (64*3, 64*6, 64, 64), (64*4, 64*6, 64, 64), (64*5, 64*6, 64, 64), (64*6, 64*6, 64, 64), (64*7, 64*5, 64, 64)],
+[(0, 64*7, 64, 64), (64*1, 64*7, 64, 64), (64*2, 64*7, 64, 64), (64*3, 64*7, 64, 64), (64*4, 64*7, 64, 64), (64*5, 64*7, 64, 64), (64*6, 64*7, 64, 64), (64*7, 64*5, 64, 64)]]
 
+meleeAttackSprites = [
+[(0, 64*12, 64, 64), (64*1, 64*12, 64, 64), (64*2, 64*12, 64, 64), (64*3, 64*12, 64, 64), (64*4, 64*12, 64, 64), (64*5, 64*12, 64, 64), (64*6, 64*12, 64, 64)],
+[(0, 64*13, 64, 64), (64*1, 64*13, 64, 64), (64*2, 64*13, 64, 64), (64*3, 64*13, 64, 64), (64*4, 64*13, 64, 64), (64*5, 64*13, 64, 64), (64*6, 64*13, 64, 64)],
+[(0, 64*14, 64, 64), (64*1, 64*14, 64, 64), (64*2, 64*14, 64, 64), (64*3, 64*14, 64, 64), (64*4, 64*14, 64, 64), (64*5, 64*14, 64, 64), (64*6, 64*14, 64, 64)],
+[(0, 64*15, 64, 64), (64*1, 64*15, 64, 64), (64*2, 64*15, 64, 64), (64*3, 64*15, 64, 64), (64*4, 64*15, 64, 64), (64*5, 64*15, 64, 64), (64*6, 64*15, 64, 64)]]
 
-moveAnim = []
-standAnim = []
-animation = [] #[0] = player, [1] = enemy
-#animation[x][0] = movAnim, animation[x][1] = standAnim
+deathSprites = [[(0, 64*20, 64, 64), (64*1, 64*20, 64, 64), (64*2, 64*20, 64, 64), (64*3, 64*20, 64, 64), (64*4, 64*20, 64, 64), (64*5, 64*20, 64, 64)]]
 
-def makeAnim(entity, i,pathName):
+def makeAnim(entity, i, pathName):
     moveAnim = []
     standAnim = []
+    attackAnim = []
+    deathAnim = []
     for dir in range(len(moveSprites)):
-
         moveImages = pyganim.getImagesFromSpriteSheet('assets/'+pathName+'.png', rects=moveSprites[dir])
         moveFrames = list(zip(moveImages, [100] * len(moveImages)))
         moveAnimation = pyganim.PygAnimation(moveFrames)
         moveAnimation.play()
         moveAnim.append(moveAnimation)
 
+    for dir in range(len(standSprites)):
         standImages = pyganim.getImagesFromSpriteSheet('assets/'+pathName+'.png', rects=standSprites[dir])
         standFrames = list(zip(standImages, [100] * len(standImages)))
         standAnimation = pyganim.PygAnimation(standFrames)
         standAnimation.play()
         standAnim.append(standAnimation)
-    #animation[i].append(moveAnim)
-    #animation[i].append(standAnim)
-    return([moveAnim,standAnim])
+
+    if entity.type == EntityType.PLAYER:
+        attackSprites = playerAttackSprites
+    else:
+        attackSprites = meleeAttackSprites
+
+    for dir in range(len(attackSprites)):
+        attackImages = pyganim.getImagesFromSpriteSheet('assets/'+pathName+'.png', rects=attackSprites[dir])
+        attackFrames = list(zip(attackImages, [100] * len(attackImages)))
+        attackAnimation = pyganim.PygAnimation(attackFrames)
+        attackAnimation.play()
+        attackAnim.append(attackAnimation)
+
+    for dir in range(len(deathSprites)):
+        deathImages = pyganim.getImagesFromSpriteSheet('assets/'+pathName+'.png', rects=deathSprites[dir])
+        deathFrames = list(zip(deathImages, [100] * len(deathImages)))
+        deathAnimation = pyganim.PygAnimation(deathFrames)
+        deathAnimation.play()
+        deathAnim.append(deathAnimation)
+
+    return([moveAnim, standAnim, attackAnim, deathAnim])
 
 def newAnim(entity, i, pathName):
     anim = makeAnim(entity, i, pathName)
     entity.moveAnim = anim[0]
     entity.standAnim = anim[1]
+    entity.attackAnim = anim[2]
 
+    entity.deathAnim = anim[3]
 
 def initAnim(entities):
     i = 0
     for entity in entities:
-        animation.append([])
         if entity.type == EntityType.PLAYER:
             entityName = "player"
             pathName = (entityName)
@@ -58,7 +86,6 @@ def initAnim(entities):
             pathName = (entityName)
         else:
             print("Unknown entity")
-        #print(pathName)
         newAnim(entity, i, pathName)
 
         i += 1
@@ -75,5 +102,9 @@ def mapY(y):
 def playAnim(displayWindow, entity):
     if entity.isWalking:
         entity.moveAnim[entity.direction].blit(displayWindow, (mapX(entity.x),mapY(entity.y)))
+    elif entity.isAttacking:
+        entity.attackAnim[entity.direction].blit(displayWindow, (mapX(entity.x),mapY(entity.y)))
+    elif entity.isDead:
+        entity.deathAnim[0].blit(displayWindow, (mapX(entity.x),mapY(entity.y)))
     else:
         entity.standAnim[entity.direction].blit(displayWindow, (mapX(entity.x),mapY(entity.y)))

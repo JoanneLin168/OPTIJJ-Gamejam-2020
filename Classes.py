@@ -19,9 +19,13 @@ class Entity():
         self.height = 64
         self.vel = v
         self.isWalking = False
+        self.isAttacking = False
+        self.isDead = False
         self.health = hp
         self.moveAnim = []
         self.standAnim = []
+        self.attackAnim = []
+        self.deathAnim = []
 
     def render(self):
         pass
