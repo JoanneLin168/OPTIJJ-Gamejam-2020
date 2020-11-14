@@ -52,7 +52,7 @@ GRID_LENGTH = 40
 #mixer.music.load("assets/music.wav")
 #mixer.music.play(-1) # -1 for loop # square
 
-player = Classes.Player(64,64,0,0,100,5,Direction.DOWN)
+player = Classes.Player(64,64,10,19,100,5,Direction.DOWN)
 enemy = Classes.Enemy(64,64,10,10,100,5,Direction.DOWN)
 Sprite.initAnim(player, enemy)
 

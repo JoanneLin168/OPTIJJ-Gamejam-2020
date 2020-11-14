@@ -14,6 +14,7 @@ pathNames = ['player', 'enemy1']
 moveAnim = []
 standAnim = []
 animation = [[],[]] #[0] = player, [1] = enemy
+#animation[x][0] = movAnim, animation[x][1] = standAnim
 
 for path in range(len(pathNames)):
     for dir in range(len(moveSprites)):
@@ -35,7 +36,7 @@ for path in range(len(pathNames)):
 
 def initAnim(player, enemy):
     player.moveAnim = animation[0][0]
-    player.standAnim = animation[0][0]
+    player.standAnim = animation[0][1]
     enemy.moveAnim = animation[1][0]
     enemy.standAnim = animation[1][1]
 
@@ -52,9 +53,9 @@ def playAnim(displayWindow, player, enemy):
     if player.isWalking:
         player.moveAnim[player.direction].blit(displayWindow, (mapX(player.x),mapY(player.y)))
     else:
-        player.moveAnim[player.direction].blit(displayWindow, (mapX(player.x),mapY(player.y)))
+        player.standAnim[player.direction].blit(displayWindow, (mapX(player.x),mapY(player.y)))
 
     if enemy.isWalking:
         enemy.moveAnim[enemy.direction].blit(displayWindow, (mapX(enemy.x),mapY(enemy.y)))
     else:
-        enemy.moveAnim[enemy.direction].blit(displayWindow, (mapX(enemy.x),mapY(enemy.y)))
+        enemy.standAnim[enemy.direction].blit(displayWindow, (mapX(enemy.x),mapY(enemy.y)))
