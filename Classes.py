@@ -5,8 +5,13 @@ class Direction():
     DOWN = 2
     RIGHT = 3
 
+class EntityType():
+    PLAYER = 0
+    ENEMY = 1
+
 class Entity():
-    def __init__(self,w,h,x,y,hp,v,direction):
+    def __init__(self,type,w,h,x,y,hp,v,direction):
+        self.type = type
         self.x = x
         self.y = y
         self.direction = Direction.DOWN
@@ -15,17 +20,19 @@ class Entity():
         self.vel = v
         self.isWalking = False
         self.health = hp
+        self.moveAnim = []
+        self.standAnim = []
 
     def render(self):
         pass
 #Can you see this comment
 class Mob(Entity):
-    def __init__(self,w,h,x,y,hp,v,direction):
-        super().__init__(w,h,x,y,hp,v,direction)
+    def __init__(self,type,w,h,x,y,hp,v,direction):
+        super().__init__(type,w,h,x,y,hp,v,direction)
 
 class Player(Mob):
-    def __init__(self,w,h,x,y,hp,v,direction): # width, height, x coord, y coord, health, velocity
-        super().__init__(w,h,x,y,hp,v,direction)
+    def __init__(self,type,w,h,x,y,hp,v,direction): # width, height, x coord, y coord, health, velocity
+        super().__init__(type,w,h,x,y,hp,v,direction)
 
     def movePlayer(self,input):
         pass
@@ -34,15 +41,15 @@ class Player(Mob):
         pass
 
 class Enemy(Mob):
-    def __init__(self,w,h,x,y,hp,v,direction):
-        super().__init__(w,h,x,y,hp,v,direction)
+    def __init__(self,type,w,h,x,y,hp,v,direction):
+        super().__init__(type,w,h,x,y,hp,v,direction)
 
     def moveEnemy(self):
         pass
 
 class meleeBot(Enemy):
-    def __init__(self,w,h,x,y,hp,v,direction):
-        super().__init__(w,h,x,y,hp,v,direction)
+    def __init__(self,type,w,h,x,y,hp,v,direction):
+        super().__init__(type,w,h,x,y,hp,v,direction)
 
     def attack(self):
         pass
@@ -51,8 +58,8 @@ class meleeBot(Enemy):
         pass
 
 class rangeBot(Enemy):
-    def __init__(self,w,h,x,y,hp,v,direction):
-        super().__init__(w,h,x,y,hp,v,direction)
+    def __init__(self,type,w,h,x,y,hp,v,direction):
+        super().__init__(type,w,h,x,y,hp,v,direction)
 
     def shoot(self):
         pass
@@ -69,9 +76,9 @@ class rangeBot(Enemy):
             self.shoot()
 
 class Item(Entity):
-    def __init__(self,w,h,x,y,direction):
-        super().__init__(w,h,x,y,hp,v,direction)
+    def __init__(self,type,w,h,x,y,hp,v,direction):
+        super().__init__(type,w,h,x,y,hp,v,direction)
 
 class Obstacle(Entity):
-    def __init__(w,h,x,y,hp,v,direction):
-        super().__init__(w,h,x,y,hp,v,direction)
+    def __init__(self,type,w,h,x,y,hp,v,direction):
+        super().__init__(type,w,h,x,y,hp,v,direction)

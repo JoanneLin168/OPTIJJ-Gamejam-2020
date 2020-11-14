@@ -11,6 +11,22 @@ class Direction():
     DOWN = 2
     RIGHT = 3
 
+class EntityType():
+    PLAYER = 0
+    ENEMY = 1
+
+enemies = []
+player = Classes.Player(EntityType.PLAYER,64,64,10,19,100,5,Direction.DOWN)
+enemy1 = Classes.Enemy(EntityType.ENEMY,64,64,10,10,100,5,Direction.DOWN)
+enemies.append(player)
+enemies.append(enemy1)
+
+enemy2 = Classes.Enemy(EntityType.ENEMY,64,64,10,0,100,5,Direction.DOWN)
+enemies.append(enemy2)
+
+Sprite.initAnim(enemies)
+Sprite.initAnim([player])
+
 def nextLevel(doorOpen,player):
     doorOpen = False
     print("Next Level")
@@ -52,10 +68,6 @@ GRID_LENGTH = 40
 #mixer.music.load("assets/music.wav")
 #mixer.music.play(-1) # -1 for loop # square
 
-player = Classes.Player(64,64,10,19,100,5,Direction.DOWN)
-enemy = Classes.Enemy(64,64,10,10,100,5,Direction.DOWN)
-Sprite.initAnim(player, enemy)
-
 doorOpen = False # if next level is available
 
 inputBuffer = 0
@@ -80,7 +92,9 @@ while True: #When program runs
     #put main display components
     showFps(displayWindow, clock)
     gridDisplay(displayWindow)
-    Sprite.playAnim(displayWindow,player,enemy)
+    for enemy in enemies:
+        Sprite.playAnim(displayWindow,enemy)
+    Sprite.playAnim(displayWindow,player)
 
     pygame.display.update() #updates to new display
     for i in pygame.event.get(): # for every event
