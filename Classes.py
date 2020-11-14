@@ -1,3 +1,4 @@
+import random
 #Class file
 class Direction():
     UP = 0
@@ -7,7 +8,8 @@ class Direction():
 
 class EntityType():
     PLAYER = 0
-    ENEMY = 1
+    ENEMY_MELEE = 1
+    ENEMY_RANGED = 2
 
 class Entity():
     def __init__(self,type,w,h,x,y,hp,v,direction):
@@ -21,7 +23,7 @@ class Entity():
         self.isWalking = False
         self.isAttacking = False
         self.isDead = False
-        self.health = hp
+        self.hp = hp
         self.moveAnim = []
         self.standAnim = []
         self.attackAnim = []
@@ -56,10 +58,52 @@ class meleeBot(Enemy):
         super().__init__(type,w,h,x,y,hp,v,direction)
 
     def attack(self):
-        pass
+        print("Stab")
 
-    def move(self):
-        pass
+    def moveEnemy(self,player):
+        if abs(self.x - player.x) < 2 and self.y == player.y:
+            self.attack()
+        elif self.x == player.x and abs(self.y - player.y) < 2:
+            self.attack()
+        else:
+            needToMoveX = False
+            needToMoveY = False
+            direcX = 0
+            direcY = 0
+            if self.x > player.x:
+                needToMoveX = True
+                direcX = Direction.LEFT
+            elif self.x < player.x:
+                needToMoveX = True
+                direcX = Direction.RIGHT
+
+            if self.y > player.y:
+                needToMoveY = True
+                direcY = Direction.UP
+            elif self.y < player.y:
+                needToMoveY = True
+                direcY = Direction.DOWN
+
+            if needToMoveX == True and needToMoveY == True:
+                rando = random.choice(["X","Y"])
+                if rando == "X":
+                    self.direction = direcX
+                else:
+                    self.direction = direcY
+            else:
+                if needToMoveX == True:
+                    self.direction = direcX
+                else:
+                    self.direction = direcY
+
+            if self.direction == 0:
+                self.y -= 1
+            elif self.direction == 1:
+                self.x -= 1
+            elif self.direction == 2:
+                self.y += 1
+            else:
+                self.x += 1
 
 class rangeBot(Enemy):
     def __init__(self,type,w,h,x,y,hp,v,direction):
@@ -86,3 +130,15 @@ class Item(Entity):
 class Obstacle(Entity):
     def __init__(self,type,w,h,x,y,hp,v,direction):
         super().__init__(type,w,h,x,y,hp,v,direction)
+
+
+class DragAndDrop():
+    def __init__(self, x, y, object):
+        self.x = x
+        self.y = y
+        self.Rect = object.get_rect(center="x,y")
+        self.Rect.x = self.x
+        self.Rect.y = self.y
+
+    def displayImg(x,y):
+        displayWindow.blit(object, (x,y))

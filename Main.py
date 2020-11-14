@@ -18,7 +18,8 @@ class Direction():
 
 class EntityType():
     PLAYER = 0
-    ENEMY = 1
+    ENEMY_MELEE = 1
+    ENEMY_RANGED = 2
 
 enemies = []
 player = Classes.Player(EntityType.PLAYER,64,64,10,19,100,5,Direction.DOWN)
@@ -72,7 +73,7 @@ def nextLevel(doorOpen,player):
             value = arrayMap[x][y]
             if value == 1:
                 #print("Melee Enemy at (",x,",",y,")")
-                enemy = Classes.Enemy(EntityType.ENEMY,64,64,x,y,100,5,Direction.DOWN)
+                enemy = Classes.meleeBot(EntityType.ENEMY_MELEE,64,64,x,y,100,5,Direction.DOWN)
                 enemies.append(enemy)
                 Sprite.initAnim(enemies)
             elif value == 2:
@@ -120,15 +121,23 @@ def showFps(displayWindow, clock):
     fps_overlay = FPS_FONT.render(str(int(clock.get_fps())), True, WHITE)
     displayWindow.blit(fps_overlay, (0, 0))
 
+def showHP(displayWindow, player):
+    hp_overlay = HP_FONT.render(('HP:'+str(player.hp)), True, WHITE)
+    displayWindow.blit(hp_overlay, (800, 0))
+
 pygame.init() #Loads the pygame window
 screenWidth = 865
 screenHeight = 865
 displayWindow = pygame.display.set_mode((screenWidth,screenHeight)) #800x800 in size
 pygame.display.set_caption("Optijj")
+
 clock = pygame.time.Clock()
 FPS = 60
 FPS_FONT = pygame.font.SysFont("Arial", 20)
 WHITE = pygame.Color("white")
+
+HP_FONT = pygame.font.SysFont("Arial", 20)
+
 GRID_LENGTH = 40
 
 #TURNED MUSIC OFF TEMPORARILY
@@ -138,7 +147,9 @@ GRID_LENGTH = 40
 doorOpen = False # if next level is available
 
 inputBuffer = 0
-inputLag = 7 #game can't accept input for 10 frames
+inputLag = 7  #game can't accept input for 10 frames
+enemyBuffer = 0
+enemyLag = 14
 
 #grid = numpy.zeros((20,20))
 
@@ -159,12 +170,20 @@ while True: #When program runs
 
     #put main display components
     showFps(displayWindow, clock)
-
+    showHP(displayWindow, player)
 
     #gridDisplay(displayWindow)
     floorDisplay(displayWindow)
 
-    for enemy in enemies:
+    if enemyBuffer == 0:
+        for i in range(1,len(enemies)):  # move first
+            enemies[i].moveEnemy(player)
+        enemyBuffer = enemyLag
+    else:
+        enemyBuffer -= 1
+
+
+    for enemy in enemies: # then render
         Sprite.playAnim(displayWindow,enemy)
     Sprite.playAnim(displayWindow,player)
 
@@ -215,6 +234,7 @@ while True: #When program runs
             player.isWalking = False
             player.isAttacking = False
             player.isDead = True #game should end
+
 
         else:
             player.isWalking = False
