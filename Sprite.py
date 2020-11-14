@@ -71,7 +71,7 @@ def initAnim(entities):
             pathNames.append(entityName)
         else:
             print("Unknown entity")
-        print(pathNames)
+        #print(pathNames)
         makeAnim(entity, i)
         entity.moveAnim = animation[i][0]
         entity.standAnim = animation[i][1]

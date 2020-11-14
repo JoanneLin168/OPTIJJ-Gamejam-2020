@@ -5,6 +5,7 @@ import Classes
 import Sprite
 from pygame import mixer
 
+
 class Direction():
     UP = 0
     LEFT = 1
@@ -27,9 +28,40 @@ enemies.append(enemy2)
 Sprite.initAnim(enemies)
 Sprite.initAnim([player])
 
+def loadLevel(filename):
+    array = []
+    file = open(filename,"r")
+    for line in file:
+        lineList = list(line)
+        arrayLine = []
+        for i in lineList:
+            if i != "\n":
+                value = int(i)
+                arrayLine.append(value)
+        array.append(arrayLine)
+    return array
+
 def nextLevel(doorOpen,player):
     doorOpen = False
+
+    #wipeEnemy(gg)
+
     print("Next Level")
+    arrayMap = loadLevel("Assets/Tutorial.txt")
+    for x in range(0,20):
+        for y in range(0,20):
+            value = arrayMap[x][y]
+            if value == 1:
+                #print("Melee Enemy at (",x,",",y,")")
+                enemy = Classes.Enemy(EntityType.ENEMY,64,64,x,y,100,5,Direction.DOWN)
+                enemies.append(enemy)
+                Sprite.initAnim(enemies)
+            elif value == 2:
+                #print("Range Enemy at (",x,",",y,")")
+                pass
+            elif value == 3:
+                #print("Puzzle Console at (",x,",",y,")")
+                pass
     player.x = 10
     player.y = 19
     return doorOpen
@@ -43,10 +75,10 @@ def gridDisplay(displayWindow):
             pygame.draw.rect(displayWindow,white,(((x*40) + 40),((y*40) + 40),40,40)) #Black Border
             pygame.draw.rect(displayWindow,black,(((x*40) + 35),((y*40) + 35),35,35))
     """
-    (0,0)------------ (20,0)
+    (0,0)------------ (19,0)
         |            |
         |            |
-  (0,20) ------------ (20,20)
+  (0,19) ------------ (19,19)
     """
 
 def showFps(displayWindow, clock):
