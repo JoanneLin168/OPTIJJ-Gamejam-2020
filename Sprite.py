@@ -14,49 +14,36 @@ standSprites = [[(0, 64*8, 64, 64)], [(0, 64*9, 64, 64)], [(0, 64*10, 64, 64)], 
 
 numOfEntities = 2
 
-pathNames = []
 
 moveAnim = []
 standAnim = []
 animation = [] #[0] = player, [1] = enemy
 #animation[x][0] = movAnim, animation[x][1] = standAnim
 
-def makeAnim(entity, i):
+def makeAnim(entity, i,pathName):
     moveAnim = []
     standAnim = []
     for dir in range(len(moveSprites)):
 
-        moveImages = pyganim.getImagesFromSpriteSheet('assets/'+pathNames[i]+'.png', rects=moveSprites[dir])
+        moveImages = pyganim.getImagesFromSpriteSheet('assets/'+pathName+'.png', rects=moveSprites[dir])
         moveFrames = list(zip(moveImages, [100] * len(moveImages)))
         moveAnimation = pyganim.PygAnimation(moveFrames)
         moveAnimation.play()
         moveAnim.append(moveAnimation)
 
-        standImages = pyganim.getImagesFromSpriteSheet('assets/'+pathNames[i]+'.png', rects=standSprites[dir])
+        standImages = pyganim.getImagesFromSpriteSheet('assets/'+pathName+'.png', rects=standSprites[dir])
         standFrames = list(zip(standImages, [100] * len(standImages)))
         standAnimation = pyganim.PygAnimation(standFrames)
         standAnimation.play()
         standAnim.append(standAnimation)
-    animation[i].append(moveAnim)
-    animation[i].append(standAnim)
+    #animation[i].append(moveAnim)
+    #animation[i].append(standAnim)
+    return([moveAnim,standAnim])
 
-def newAnim(entity):
-    for dir in range(len(moveSprites)):
-        moveImages = pyganim.getImagesFromSpriteSheet('assets/'+pathNames[path]+'.png', rects=moveSprites[dir])
-        moveFrames = list(zip(moveImages, [100] * len(moveImages)))
-        moveAnimation = pyganim.PygAnimation(moveFrames)
-        moveAnimation.play()
-        moveAnim.append(moveAnimation)
-
-        standImages = pyganim.getImagesFromSpriteSheet('assets/'+pathNames[path]+'.png', rects=standSprites[dir])
-        standFrames = list(zip(standImages, [100] * len(standImages)))
-        standAnimation = pyganim.PygAnimation(standFrames)
-        standAnimation.play()
-        standAnim.append(standAnimation)
-    animation[path].append(moveAnim)
-    animation[path].append(standAnim)
-    moveAnim = []
-    standAnim = []
+def newAnim(entity, i, pathName):
+    anim = makeAnim(entity, i, pathName)
+    entity.moveAnim = anim[0]
+    entity.standAnim = anim[1]
 
 
 def initAnim(entities):
@@ -65,21 +52,17 @@ def initAnim(entities):
         animation.append([])
         if entity.type == EntityType.PLAYER:
             entityName = "player"
-            pathNames.append(entityName)
+            pathName = (entityName)
         elif entity.type == EntityType.ENEMY:
             entityName = "enemy"
-            pathNames.append(entityName)
+            pathName = (entityName)
         else:
             print("Unknown entity")
-        #print(pathNames)
-        makeAnim(entity, i)
-        entity.moveAnim = animation[i][0]
-        entity.standAnim = animation[i][1]
+        #print(pathName)
+        newAnim(entity, i, pathName)
+
         i += 1
     return (entities)
-
-
-
 
 def mapX(x):
     x = (x*40) + 20
