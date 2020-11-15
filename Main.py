@@ -21,12 +21,13 @@ class EntityType():
     ENEMY_MELEE = 1
     ENEMY_RANGED = 2
     COMPUTER = 3
+    BOSS = 4
 
 enemies = []
 turrets = []
-computers = []
 turretChecks = []
-player = Classes.Player(EntityType.PLAYER,64,64,10,19,100,5,Direction.UP)
+computers = []
+player = Classes.Player(EntityType.BOSS,64,64,10,19,100,5,Direction.UP)
 #enemy1 = Classes.Enemy(EntityType.ENEMY,64,64,10,10,100,5,Direction.DOWN)
 enemies.append(player)
 #enemies.append(enemy1)
@@ -60,6 +61,22 @@ def wipeEnemy(): #DUMMY FUNCTION TO REMOVE ENEMIES FROM A LEVEL FOR NOW
     for i in toDelete:
         enemies.pop((i-modifier))
         modifier += 1
+    toDelete = []
+    for i in turrets:
+        if i.type == 2:
+            toDelete.append(turrets.index(i))
+    modifier = 0
+    for i in toDelete:
+        turrets.pop((i-modifier))
+        modifier += 1
+    toDelete = []
+    for i in computers:
+        if i.type == 3:
+            toDelete.append(computers.index(i))
+    modifier = 0
+    for i in toDelete:
+        computers.pop((i-modifier))
+        modifier += 1
 
 
 def nextLevel(doorOpen,player):
@@ -86,12 +103,12 @@ def nextLevel(doorOpen,player):
                 turretChecks.append(False)
             elif value == 3:
                 #print("Puzzle Console at (",x,",",y,")")
-                #computer = Classes.Computer(EntityType.COMPUTER,64,64,x,y)
-                #computers.append(computer)
+                computer = Classes.Computer(EntityType.COMPUTER,64,64,x,y,100,5,Direction.DOWN)
+                computers.append(computer)
                 pass
     Sprite.initAnim(enemies)
     Sprite.initAnim(turrets)
-    #Sprite.initAnim(terminals)
+    Sprite.initAnim(computers)
     player.x = 10
     player.y = 19
     return doorOpen
@@ -121,9 +138,6 @@ def showFps(displayWindow, clock):
     fps_overlay = FPS_FONT.render(str(int(clock.get_fps())), True, WHITE)
     displayWindow.blit(fps_overlay, (0, 0))
 
-def showHP(displayWindow, player):
-    hp_overlay = HP_FONT.render(('HP:'+str(player.hp)), True, WHITE)
-    displayWindow.blit(hp_overlay, (800, 0))
 
 pygame.init() #Loads the pygame window
 screenWidth = 865
@@ -135,8 +149,6 @@ clock = pygame.time.Clock()
 FPS = 60
 FPS_FONT = pygame.font.SysFont("Arial", 20)
 WHITE = pygame.Color("white")
-
-HP_FONT = pygame.font.SysFont("Arial", 20)
 
 GRID_LENGTH = 40
 
@@ -165,36 +177,37 @@ enemyLag = 14
 #puzzles?
 #Combat
 #weapons
-bg = pygame.image.load('assets/red.png')
+
 while True: #When program runs
     displayWindow.fill((255,255,255)) #background is white
     floorDisplay(displayWindow,doorOpen)
 
     #put main display components
     showFps(displayWindow, clock)
-    showHP(displayWindow, player)
-
-
-
-
 
     if enemyBuffer == 0:
         for i in range(1,len(enemies)):  # move first
             enemies[i].moveEnemy(player)
-        enemyBuffer = enemyLag
+        if int(clock.get_fps()) > 10: # crashed or loading
+            enemyBuffer = (enemyLag * (int(clock.get_fps()) * (1/60))) // 1
+        else:
+            enemyBuffer = enemyLag
     else:
         enemyBuffer -= 1
 
-    for i in range(0,len(turrets)):
-        if turretChecks[i]:
-            shot = turrets[i].shoot()
-            if shot:
-                turretChecks[i] = False
-        turretChecks[i] = turrets[i].checkShoot(player)
+    if doorOpen == False:
+        for i in range(0,len(turrets)):
+            if turretChecks[i]:
+                shot = turrets[i].shoot()
+                if shot:
+                    turretChecks[i] = False
+            turretChecks[i] = turrets[i].checkShoot(player)
+
+    for computer in computers:
+        Sprite.playAnim(displayWindow,computer)
 
     for enemy in enemies: # then render
         Sprite.playAnim(displayWindow,enemy)
-    Sprite.playAnim(displayWindow,player)
 
     for turret in turrets:
         Sprite.playAnim(displayWindow,turret)
@@ -211,29 +224,29 @@ while True: #When program runs
             player.x -= 1
             player.direction = Direction.LEFT
             player.isWalking = True
-            inputBuffer = inputLag
+            inputBuffer = (inputLag * (int(clock.get_fps()) * (1/60))) // 1
 
         elif keys[pygame.K_RIGHT] and player.x < 19:
             player.x += 1
             player.direction = Direction.RIGHT
             player.isWalking = True
-            inputBuffer = inputLag
+            inputBuffer = (inputLag * (int(clock.get_fps()) * (1/60))) // 1
 
         elif keys[pygame.K_UP] and player.y > 0:
             player.y -= 1
             player.direction = Direction.UP
             player.isWalking = True
-            inputBuffer = inputLag
+            inputBuffer = (inputLag * (int(clock.get_fps()) * (1/60))) // 1
 
         elif keys[pygame.K_UP] and player.y == 0 and player.x == 10 and doorOpen:
 
             doorOpen = nextLevel(doorOpen,player)
         #comment out if no moving back
-        elif keys[pygame.K_DOWN] and player.y < 19:
-            #player.y += player.vel
-            player.y += 1
-            player.direction = Direction.DOWN
-            player.isWalking = True
+        #elif keys[pygame.K_DOWN] and player.y < 19:
+        #    #player.y += player.vel
+        #    player.y += 1
+        #    player.direction = Direction.DOWN
+        #    player.isWalking = True
             #player.health = player.health - 1
 
             inputBuffer = inputLag
@@ -243,13 +256,21 @@ while True: #When program runs
             player.isAttacking = True
             # open door if at console
             #implement if
-            doorOpen = True
+            #print("I am here " + str(player.x) + " , " + str(player.y))
+            for i in range(0,len(computers)):
+                doorOpen = True
+                #print("Pc is " + str(computers[i].x) + " , " + str(computers[i].y))
+                if player.x == computers[i].x and player.y == computers[i].y:
+                    computers[i].unlocked = True
+                    #print(computers[i].unlocked)
+                if computers[i].unlocked == False:
+                    doorOpen = False
 
         elif keys[pygame.K_x]:
             player.isWalking = False
             player.isAttacking = False
-            player.isDead = True #game should end
-
+            #player.die() #player.isDead = True
+            doorOpen = True
 
         else:
             player.isWalking = False

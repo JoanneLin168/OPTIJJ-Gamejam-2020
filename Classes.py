@@ -11,6 +11,7 @@ class EntityType():
     ENEMY_MELEE = 1
     ENEMY_RANGED = 2
     COMPUTER = 3
+    BOSS = 4
 
 class Entity():
     def __init__(self,type,w,h,x,y,hp,v,direction):
@@ -29,6 +30,7 @@ class Entity():
         self.standAnim = []
         self.attackAnim = []
         self.deathAnim = []
+        self.attackParticles = []
 
     def render(self):
         pass
@@ -36,11 +38,10 @@ class Entity():
 
 
 class Computer(Entity):
-    def __init__(self,type,w,h,x,y):
-        super().__init__(type,w,h,x,y)
+    def __init__(self,type,w,h,x,y,hp,v,direction):
+        super().__init__(type,w,h,x,y,hp,v,direction)
+        self.unlocked = False
 
-    def unlockDoor():
-        return True
 
 
 class Mob(Entity):
@@ -51,8 +52,11 @@ class Player(Mob):
     def __init__(self,type,w,h,x,y,hp,v,direction): # width, height, x coord, y coord, health, velocity
         super().__init__(type,w,h,x,y,hp,v,direction)
 
+    def hit(self):
+        self.die()
+
     def die(self):
-        pass
+        self.isDead = True
 
 class Enemy(Mob):
     def __init__(self,type,w,h,x,y,hp,v,direction):
@@ -65,14 +69,17 @@ class meleeBot(Enemy):
     def __init__(self,type,w,h,x,y,hp,v,direction):
         super().__init__(type,w,h,x,y,hp,v,direction)
 
-    def attack(self):
-        print("Stab")
+    def hit(self):
+        self.isDead = True
+
+    def attack(self,player):
+        print("Hit")
 
     def moveEnemy(self,player):
         if abs(self.x - player.x) < 2 and self.y == player.y:
-            self.attack()
+            self.attack(player)
         elif self.x == player.x and abs(self.y - player.y) < 2:
-            self.attack()
+            self.attack(player)
         else:
             needToMoveX = False
             needToMoveY = False
@@ -118,12 +125,23 @@ class rangeBot(Enemy):
         super().__init__(type,w,h,x,y,hp,v,direction)
         self.countdown = 60
 
+    def isHit(self,player,enemies):
+        targets = [player]
+        for e in enemies:
+            targets.append(e)
+        for t in targets:
+            if self.x == t.x:
+                t.hit()
+
     def shoot(self):
         if self.countdown == 0:
+            self.isAttacking = True
             self.countdown = 60
             print("Shoot") #Add code to shoot laser at player here, display a laser and then call a isHit
             return True
         else:
+            if self.countdown <= 40:
+                self.isAttacking = False
             self.countdown -= 1
             return False
 
