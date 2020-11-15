@@ -3,12 +3,20 @@ import pyganim
 import random
 import Classes
 import Sprite
+import MainMenu
 from pygame import mixer
+import ParthWorkingPuzzle
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 global levelList
-levelList = ["Assets/Tutorial.txt","Assets/Level01.txt","Assets/Level02.txt"]
+levelList = ["Assets/Tutorial.txt","Assets/Level01.txt","Assets/Level02.txt","Assets/Level03.txt","Assets/Level04.txt","Assets/Level05.txt","Assets/boss.txt"]
 global levelID
 levelID = 0
+global roomAudio
+roomAudio = ["Assets/OPTIJJ.wav","Assets/OnceStarted.wav","X","X","X","Assets/DuringPuzzleRoom.wav","Assets/IMRANBossFight.wav"]
+global aBadlyProgrammedVariable
+aBadlyProgrammedVariable = False
 
 class Direction():
     UP = 0
@@ -27,7 +35,7 @@ enemies = []
 turrets = []
 turretChecks = []
 computers = []
-player = Classes.Player(EntityType.BOSS,64,64,10,19,100,5,Direction.UP)
+player = Classes.Player(EntityType.PLAYER,64,64,10,19,100,5,Direction.UP)
 #enemy1 = Classes.Enemy(EntityType.ENEMY,64,64,10,10,100,5,Direction.DOWN)
 enemies.append(player)
 #enemies.append(enemy1)
@@ -81,38 +89,75 @@ def wipeEnemy(): #DUMMY FUNCTION TO REMOVE ENEMIES FROM A LEVEL FOR NOW
 
 def nextLevel(doorOpen,player):
     global levelID
+    global aBadlyProgrammedVariable
+    global roomAudio
+
 
     doorOpen = False
 
     wipeEnemy()
 
-    print("Next Level")
-    arrayMap = loadLevel(levelList[levelID])
-    levelID += 1
-    for x in range(0,20):
-        for y in range(0,20):
-            value = arrayMap[x][y]
-            if value == 1:
-                #print("Melee Enemy at (",x,",",y,")")
-                enemy = Classes.meleeBot(EntityType.ENEMY_MELEE,64,64,x,y,100,5,Direction.DOWN)
-                enemies.append(enemy)
-            elif value == 2:
-                #print("Range Enemy at (",x,",",y,")")
-                turret = Classes.rangeBot(EntityType.ENEMY_RANGED,64,64,x,y,100,5,Direction.DOWN)
-                turrets.append(turret)
-                turretChecks.append(False)
-            elif value == 3:
-                #print("Puzzle Console at (",x,",",y,")")
-                computer = Classes.Computer(EntityType.COMPUTER,64,64,x,y,100,5,Direction.DOWN)
-                computers.append(computer)
-                pass
-    Sprite.initAnim(enemies)
-    Sprite.initAnim(turrets)
-    Sprite.initAnim(computers)
-    player.x = 10
-    player.y = 19
-    return doorOpen
+    #print("Next Level")
+    try:
+        arrayMap = loadLevel(levelList[levelID])
+        levelID += 1
 
+        if roomAudio[levelID] != "X":
+            music = pygame.mixer.music.load(roomAudio[levelID])
+            pygame.mixer.music.play()
+
+        if levelID == 7:
+            aBadlyProgrammedVariable = True
+        for x in range(0,20):
+            for y in range(0,20):
+                value = arrayMap[x][y]
+                if value == 1:
+                    #print("Melee Enemy at (",x,",",y,")")
+                    enemy = Classes.meleeBot(EntityType.ENEMY_MELEE,64,64,x,y,100,5,Direction.DOWN)
+                    enemies.append(enemy)
+                elif value == 2:
+                    #print("Range Enemy at (",x,",",y,")")
+                    turret = Classes.rangeBot(EntityType.ENEMY_RANGED,64,64,x,y,100,5,Direction.DOWN)
+                    turrets.append(turret)
+                    turretChecks.append(False)
+                elif value == 3:
+                    #print("Puzzle Console at (",x,",",y,")")
+                    computer = Classes.Computer(EntityType.COMPUTER,64,64,x,y,100,5,Direction.DOWN)
+                    computers.append(computer)
+                    pass
+        Sprite.initAnim(enemies)
+        Sprite.initAnim(turrets)
+        Sprite.initAnim(computers)
+        player.x = 10
+        player.y = 19
+        return 0,doorOpen
+    except IndexError:
+        #print("Thanks")
+        #pygame.quit()
+        return -1,doorOpen
+
+"""
+def saveState(arrayMap):
+    file = open("Assets/SaveState.txt","w")
+    for i in arrayMap:
+        for j in i:
+            file.write(str(j))
+        file.write("\n")
+    file.close()
+
+def recoverState():
+    file = open("Assets/Savestate.txt","r")
+    arrayMap = []
+    for line in file:
+        lineArray = list(line)
+        arraySlice = []
+        for i in range(0,len(lineArray)):
+            if i != "\n":
+                arraySlice.append(int(lineArray[i]))
+        arrayMap.append(arraySlice)
+    file.close()
+    return arrayMap
+"""
 
 def floorDisplay(displayWindow,doorOpen):
     floorImage = pygame.image.load('assets/tile.png')
@@ -156,29 +201,48 @@ GRID_LENGTH = 40
 #mixer.music.load("assets/music.wav")
 #mixer.music.play(-1) # -1 for loop # square
 
+
 doorOpen = False # if next level is available
 
 inputBuffer = 0
-inputLag = 7  #game can't accept input for 10 frames
+inputLag = 7  #game can't accept input for 7 frames
 enemyBuffer = 0
 enemyLag = 14
 
+status = 0
 
 
-#grid = numpy.zeros((20,20))
+isMenu = True
+isCredits = False
+gameOver = False
+running = MainMenu.renderMenu(displayWindow,isMenu,isCredits,gameOver,status)
 
-# player has been cloned?
-# Ideas
-# Unique Combat
-# can move forward right or left
-# cant go back into previous room
-#top down
-#timer for each room - 60 seconds
-#puzzles?
-#Combat
-#weapons
+#running = True
+if running == True:
+    isCredits = False
+    isMenu = False
 
-while True: #When program runs
+while running: #When program runs
+
+
+    if aBadlyProgrammedVariable:
+        #print("123")
+        ParthWorkingPuzzle.main(displayWindow,clock)
+        aBadlyProgrammedVariable = False
+
+    isdoorOpen = True
+    for i in range(0,len(computers)):
+
+        #print("Pc is " + str(computers[i].x) + " , " + str(computers[i].y))
+        if player.x == computers[i].x and player.y == computers[i].y:
+            computers[i].unlocked = True
+            #print(computers[i].unlocked)
+        if computers[i].unlocked == False:
+            isdoorOpen = False
+    if isdoorOpen:
+        doorOpen = True
+
+
     displayWindow.fill((255,255,255)) #background is white
     floorDisplay(displayWindow,doorOpen)
 
@@ -206,8 +270,15 @@ while True: #When program runs
     for computer in computers:
         Sprite.playAnim(displayWindow,computer)
 
+    toDelete = []
     for enemy in enemies: # then render
         Sprite.playAnim(displayWindow,enemy)
+        if enemy.isDead == True:
+            toDelete.append(enemies.index(enemy))
+    modi = 0
+    for i in toDelete:
+        enemies.pop(i-modi)
+        modi += 1
 
     for turret in turrets:
         Sprite.playAnim(displayWindow,turret)
@@ -240,7 +311,7 @@ while True: #When program runs
 
         elif keys[pygame.K_UP] and player.y == 0 and player.x == 10 and doorOpen:
 
-            doorOpen = nextLevel(doorOpen,player)
+            status,doorOpen = nextLevel(doorOpen,player)
         #comment out if no moving back
         #elif keys[pygame.K_DOWN] and player.y < 19:
         #    #player.y += player.vel
@@ -251,34 +322,25 @@ while True: #When program runs
 
             inputBuffer = inputLag
 
-        elif keys[pygame.K_z]:
-            player.isWalking = False
-            player.isAttacking = True
-            # open door if at console
-            #implement if
-            #print("I am here " + str(player.x) + " , " + str(player.y))
-            for i in range(0,len(computers)):
-                doorOpen = True
-                #print("Pc is " + str(computers[i].x) + " , " + str(computers[i].y))
-                if player.x == computers[i].x and player.y == computers[i].y:
-                    computers[i].unlocked = True
-                    #print(computers[i].unlocked)
-                if computers[i].unlocked == False:
-                    doorOpen = False
-
-        elif keys[pygame.K_x]:
-            player.isWalking = False
-            player.isAttacking = False
-            #player.die() #player.isDead = True
-            doorOpen = True
-
         else:
             player.isWalking = False
             player.isAttacking = False
+
+        if player.isDead:
+            levelID = 0
+            gameOver = True
+            running = MainMenu.renderMenu(displayWindow,isMenu,isCredits,gameOver,status)
             player.isDead = False
+            gameOVer = False
+            player.x = 10
+            player.y = 19
+            status, doorOpen = nextLevel(doorOpen,player)
+
 
     else:
         inputBuffer -= 1
 
     #print("player x = ",player.x, "player.y = ", player.y,"input buffer = ",inputBuffer)
     clock.tick(FPS) #fps
+
+#for game over, goes back to MainMenu

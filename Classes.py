@@ -73,7 +73,7 @@ class meleeBot(Enemy):
         self.isDead = True
 
     def attack(self,player):
-        print("Hit")
+        player.isDead = True
 
     def moveEnemy(self,player):
         if abs(self.x - player.x) < 2 and self.y == player.y:
@@ -137,7 +137,8 @@ class rangeBot(Enemy):
         if self.countdown == 0:
             self.isAttacking = True
             self.countdown = 60
-            print("Shoot") #Add code to shoot laser at player here, display a laser and then call a isHit
+            #print("Shoot") #Add code to shoot laser at player here, display a laser and then call a isHit
+            player.isDead = True
             return True
         else:
             if self.countdown <= 40:
