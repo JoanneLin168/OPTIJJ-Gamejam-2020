@@ -2,6 +2,7 @@ import pygame
 import Classes
 import random
 #import Main
+#import Main
 #import numpy
 pygame.init() #Loads the pygame window
 screenWidth800 = 800
@@ -56,7 +57,7 @@ class InputBox:
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
-        pygame.draw.rect(screen, self.color, self.rect, 2)
+        pygame.draw.rect(screen, self.colour, self.rect, 2)
 
 
 

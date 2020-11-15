@@ -65,8 +65,7 @@ def main(displayWindow,clock):
                         if check_result() == True:
                             ISay = False
                         else:
-                            #print("Not quite there")
-                            pass
+                            print("Not quite there")
                     for a in range (0,5):
                         if shapeRect[a].collidepoint((mx, my)):
                             click_Number = a

@@ -13,8 +13,6 @@ global levelList
 levelList = ["Assets/Tutorial.txt","Assets/Level01.txt","Assets/Level02.txt","Assets/Level03.txt","Assets/Level04.txt","Assets/Level05.txt","Assets/boss.txt"]
 global levelID
 levelID = 0
-global roomAudio
-roomAudio = ["Assets/OPTIJJ.wav","Assets/OnceStarted.wav","X","X","X","Assets/DuringPuzzleRoom.wav","Assets/IMRANBossFight.wav"]
 global aBadlyProgrammedVariable
 aBadlyProgrammedVariable = False
 
@@ -90,8 +88,8 @@ def wipeEnemy(): #DUMMY FUNCTION TO REMOVE ENEMIES FROM A LEVEL FOR NOW
 def nextLevel(doorOpen,player):
     global levelID
     global aBadlyProgrammedVariable
-    global roomAudio
 
+    roomAudio = ["Assets/OPTIJJ.mp3","Assets/OnceStarted.mp3",X,X,X,"Assets/DuringPuzzleRoom.mp3","Assets/IMRANBossFight.mp3"]
 
     doorOpen = False
 
@@ -101,12 +99,9 @@ def nextLevel(doorOpen,player):
     try:
         arrayMap = loadLevel(levelList[levelID])
         levelID += 1
-
-        if roomAudio[levelID] != "X":
-            music = pygame.mixer.music.load(roomAudio[levelID])
-            pygame.mixer.music.play()
-
-        if levelID == 7:
+        music = pygame.mixer.music.load(roomAudio[levelID])
+        pygame.mixer.music.play(1)
+        if levelID == 5:
             aBadlyProgrammedVariable = True
         for x in range(0,20):
             for y in range(0,20):
@@ -130,11 +125,11 @@ def nextLevel(doorOpen,player):
         Sprite.initAnim(computers)
         player.x = 10
         player.y = 19
-        return 0,doorOpen
+        return doorOpen
     except IndexError:
         #print("Thanks")
-        #pygame.quit()
-        return -1,doorOpen
+        pygame.quit()
+        return doorOpen
 
 """
 def saveState(arrayMap):
@@ -209,21 +204,9 @@ inputLag = 7  #game can't accept input for 7 frames
 enemyBuffer = 0
 enemyLag = 14
 
-status = 0
+MainMenu.startScreen(displayWindow)
 
-
-isMenu = True
-isCredits = False
-gameOver = False
-running = MainMenu.renderMenu(displayWindow,isMenu,isCredits,gameOver,status)
-
-#running = True
-if running == True:
-    isCredits = False
-    isMenu = False
-
-while running: #When program runs
-
+while True: #When program runs
 
     if aBadlyProgrammedVariable:
         #print("123")
@@ -274,7 +257,7 @@ while running: #When program runs
     for enemy in enemies: # then render
         Sprite.playAnim(displayWindow,enemy)
         if enemy.isDead == True:
-            toDelete.append(enemies.index(enemy))
+            toDelete.append(index(enemies.index(enemy)))
     modi = 0
     for i in toDelete:
         enemies.pop(i-modi)
@@ -311,7 +294,7 @@ while running: #When program runs
 
         elif keys[pygame.K_UP] and player.y == 0 and player.x == 10 and doorOpen:
 
-            status,doorOpen = nextLevel(doorOpen,player)
+            doorOpen = nextLevel(doorOpen,player)
         #comment out if no moving back
         #elif keys[pygame.K_DOWN] and player.y < 19:
         #    #player.y += player.vel
@@ -325,22 +308,10 @@ while running: #When program runs
         else:
             player.isWalking = False
             player.isAttacking = False
-
-        if player.isDead:
-            levelID = 0
-            gameOver = True
-            running = MainMenu.renderMenu(displayWindow,isMenu,isCredits,gameOver,status)
             player.isDead = False
-            gameOVer = False
-            player.x = 10
-            player.y = 19
-            status, doorOpen = nextLevel(doorOpen,player)
-
 
     else:
         inputBuffer -= 1
 
     #print("player x = ",player.x, "player.y = ", player.y,"input buffer = ",inputBuffer)
     clock.tick(FPS) #fps
-
-#for game over, goes back to MainMenu
