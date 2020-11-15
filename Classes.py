@@ -10,6 +10,7 @@ class EntityType():
     PLAYER = 0
     ENEMY_MELEE = 1
     ENEMY_RANGED = 2
+    COMPUTER = 3
 
 class Entity():
     def __init__(self,type,w,h,x,y,hp,v,direction):
@@ -32,6 +33,16 @@ class Entity():
     def render(self):
         pass
 #Can you see this comment
+
+
+class Computer(Entity):
+    def __init__(self,type,w,h,x,y):
+        super().__init__(type,w,h,x,y)
+
+    def unlockDoor():
+        return True
+
+
 class Mob(Entity):
     def __init__(self,type,w,h,x,y,hp,v,direction):
         super().__init__(type,w,h,x,y,hp,v,direction)
@@ -40,10 +51,7 @@ class Player(Mob):
     def __init__(self,type,w,h,x,y,hp,v,direction): # width, height, x coord, y coord, health, velocity
         super().__init__(type,w,h,x,y,hp,v,direction)
 
-    def movePlayer(self,input):
-        pass
-
-    def attack(self):
+    def die(self):
         pass
 
 class Enemy(Mob):
@@ -108,20 +116,24 @@ class meleeBot(Enemy):
 class rangeBot(Enemy):
     def __init__(self,type,w,h,x,y,hp,v,direction):
         super().__init__(type,w,h,x,y,hp,v,direction)
+        self.countdown = 60
 
     def shoot(self):
-        pass
-
-    def move(self):
-        if player.x > self.x:
-            self.dir = Direction.RIGHT
-            self.x += self.vel
-        elif player.x < self.x:
-            self.dir = Direction.LEFT
-            self.x -= self.vel
+        if self.countdown == 0:
+            self.countdown = 60
+            print("Shoot") #Add code to shoot laser at player here, display a laser and then call a isHit
+            return True
         else:
-            self.dir = Direction.DOWN
-            self.shoot()
+            self.countdown -= 1
+            return False
+
+    def checkShoot(self,player):
+        shouldShoot = False
+        if self.x == player.x:
+            shouldShoot = True
+        return shouldShoot
+
+
 
 class Item(Entity):
     def __init__(self,type,w,h,x,y,hp,v,direction):

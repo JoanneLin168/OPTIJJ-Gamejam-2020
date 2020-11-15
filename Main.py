@@ -20,9 +20,13 @@ class EntityType():
     PLAYER = 0
     ENEMY_MELEE = 1
     ENEMY_RANGED = 2
+    COMPUTER = 3
 
 enemies = []
-player = Classes.Player(EntityType.PLAYER,64,64,10,19,100,5,Direction.DOWN)
+turrets = []
+computers = []
+turretChecks = []
+player = Classes.Player(EntityType.PLAYER,64,64,10,19,100,5,Direction.UP)
 #enemy1 = Classes.Enemy(EntityType.ENEMY,64,64,10,10,100,5,Direction.DOWN)
 enemies.append(player)
 #enemies.append(enemy1)
@@ -75,41 +79,37 @@ def nextLevel(doorOpen,player):
                 #print("Melee Enemy at (",x,",",y,")")
                 enemy = Classes.meleeBot(EntityType.ENEMY_MELEE,64,64,x,y,100,5,Direction.DOWN)
                 enemies.append(enemy)
-                Sprite.initAnim(enemies)
             elif value == 2:
                 #print("Range Enemy at (",x,",",y,")")
-                pass
+                turret = Classes.rangeBot(EntityType.ENEMY_RANGED,64,64,x,y,100,5,Direction.DOWN)
+                turrets.append(turret)
+                turretChecks.append(False)
             elif value == 3:
                 #print("Puzzle Console at (",x,",",y,")")
+                #computer = Classes.Computer(EntityType.COMPUTER,64,64,x,y)
+                #computers.append(computer)
                 pass
+    Sprite.initAnim(enemies)
+    Sprite.initAnim(turrets)
+    #Sprite.initAnim(terminals)
     player.x = 10
     player.y = 19
     return doorOpen
 
-def gridDisplay(displayWindow):
 
-    black = (0,0,0)
-    white = (255,255,255)
-    for x in range(0,20):
-        for y in range(0,20):
-            pygame.draw.rect(displayWindow,white,(((x*40) + 40),((y*40) + 40),40,40)) #Black Border
-            pygame.draw.rect(displayWindow,black,(((x*40) + 35),((y*40) + 35),35,35))
-
-def floorDisplay(displayWindow):
+def floorDisplay(displayWindow,doorOpen):
     floorImage = pygame.image.load('assets/tile.png')
-    doorImage = pygame.image.load('assets/door.png')
-    openDoor = pygame.image.load('assets/dooro.png')
-    black = (0,0,0)
-    white = (255,255,255)
+    closed = pygame.image.load('assets/wallclosed.png')
+    open = pygame.image.load('assets/wallopen.png')
+    if doorOpen:
+        displayWindow.blit(open,(0,0))
+    else:
+        displayWindow.blit(closed,(0,0))
+
     for x in range(0,20):
         for y in range(0,20):
-            if y == 0 and x == 10:
-                if doorOpen:
-                    displayWindow.blit(openDoor,(((x*40)+30),((y*40) + 35)))
-                else:
-                    displayWindow.blit(doorImage,(((x*40)+30),((y*40) + 35)))
-            else:
-                displayWindow.blit(floorImage,(((x*40)+30),((y*40) + 35)))
+            displayWindow.blit(floorImage,(((x*40)+30),((y*40) + 35)))
+
     """
     (0,0)------------ (19,0)
         |            |
@@ -151,6 +151,8 @@ inputLag = 7  #game can't accept input for 10 frames
 enemyBuffer = 0
 enemyLag = 14
 
+
+
 #grid = numpy.zeros((20,20))
 
 # player has been cloned?
@@ -166,14 +168,15 @@ enemyLag = 14
 bg = pygame.image.load('assets/red.png')
 while True: #When program runs
     displayWindow.fill((255,255,255)) #background is white
-    displayWindow.blit(bg,(0,0))
+    floorDisplay(displayWindow,doorOpen)
 
     #put main display components
     showFps(displayWindow, clock)
     showHP(displayWindow, player)
 
-    #gridDisplay(displayWindow)
-    floorDisplay(displayWindow)
+
+
+
 
     if enemyBuffer == 0:
         for i in range(1,len(enemies)):  # move first
@@ -182,10 +185,19 @@ while True: #When program runs
     else:
         enemyBuffer -= 1
 
+    for i in range(0,len(turrets)):
+        if turretChecks[i]:
+            shot = turrets[i].shoot()
+            if shot:
+                turretChecks[i] = False
+        turretChecks[i] = turrets[i].checkShoot(player)
 
     for enemy in enemies: # then render
         Sprite.playAnim(displayWindow,enemy)
     Sprite.playAnim(displayWindow,player)
+
+    for turret in turrets:
+        Sprite.playAnim(displayWindow,turret)
 
     pygame.display.update() #updates to new display
     for i in pygame.event.get(): # for every event
@@ -223,12 +235,15 @@ while True: #When program runs
             player.direction = Direction.DOWN
             player.isWalking = True
             #player.health = player.health - 1
-            doorOpen = True
+
             inputBuffer = inputLag
 
         elif keys[pygame.K_z]:
             player.isWalking = False
             player.isAttacking = True
+            # open door if at console
+            #implement if
+            doorOpen = True
 
         elif keys[pygame.K_x]:
             player.isWalking = False
