@@ -175,8 +175,8 @@ def floorDisplay(displayWindow,doorOpen):
     """
 
 def showFps(displayWindow, clock):
-    fps_overlay = FPS_FONT.render(str(int(clock.get_fps())), True, WHITE)
-    displayWindow.blit(fps_overlay, (0, 0))
+    fps_overlay = FPS_FONT.render('FPS: '+str(int(clock.get_fps())), True, WHITE)
+    displayWindow.blit(fps_overlay, (10, 5))
 
 
 pygame.init() #Loads the pygame window
