@@ -196,6 +196,11 @@ def showFps(displayWindow, clock):
     fps_overlay = FPS_FONT.render('FPS: '+str(int(clock.get_fps())), True, WHITE)
     displayWindow.blit(fps_overlay, (10, 5))
 
+def showDeathAnim():
+    deathLag = 20
+    while (deathLag != 0):
+        deathLag -= 1
+        clock.tick(60)
 
 pygame.init() #Loads the pygame window
 screenWidth = 865
@@ -343,6 +348,7 @@ while running: #When program runs
         if player.isDead:
             levelID = 0
             gameOver = True
+            showDeathAnim()
             running = MainMenu.renderMenu(displayWindow,isMenu,isCredits,gameOver,status)
             player.isDead = False
             gameOVer = False

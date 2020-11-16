@@ -78,8 +78,10 @@ class meleeBot(Enemy):
     def moveEnemy(self,player):
         if abs(self.x - player.x) < 2 and self.y == player.y:
             self.attack(player)
+            self.isAttacking = True
         elif self.x == player.x and abs(self.y - player.y) < 2:
             self.attack(player)
+            self.isAttacking = True
         else:
             needToMoveX = False
             needToMoveY = False
